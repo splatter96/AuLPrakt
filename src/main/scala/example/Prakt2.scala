@@ -3,7 +3,8 @@ package example
 object Prakt2{
 
   abstract sealed class Heap {
-    def s(): Int
+    val s: Int // shortest distance to a leaf/Empty node
+
     def isLeftTree(): Boolean
     def put(n: Heap): Heap
     def merge(h: Heap): Heap
@@ -11,20 +12,19 @@ object Prakt2{
   }
   
   case object Empty extends Heap {
-    def s() = 0
+    val s = 0
+
     def isLeftTree() = true
     def merge(h: Heap) = h
-    def put(h: Heap) = h //Node(h.value, Empty, Empty)
+    def put(h: Heap) = h
     def removeMin() = Empty
   }
   
   case class Node(value: Int, l: Heap, r: Heap) extends Heap {
-    def s() = {
-        (l.s() + 1).min(r.s() + 1)
-    }
+    val s = (l.s + 1).min(r.s + 1)
 
     def isLeftTree() = {
-        l.s() >= r.s() && l.isLeftTree() && r.isLeftTree()
+        l.s >= r.s && l.isLeftTree() && r.isLeftTree()
     }
 
     def merge(h: Heap): Heap = {
@@ -38,13 +38,12 @@ object Prakt2{
 
                 n.r match {
                     case Empty => {
-                            if(Node(n.value, n.l, m).isLeftTree()){
-                                Node(n.value, n.l, m)
-                            }else{
-                                // if resulting heap is not a leftTree
-                                // swap subtrees
+                            val tmp = Node(n.value, n.l, m)
+                            if(tmp.isLeftTree())
+                                tmp
+                            else
+                                // if resulting heap is not a leftTree swap subtrees
                                 Node(n.value, m, n.l)
-                            }
                     }
                     case _ => Node(n.value, n.l, n.r.merge(m))
                 }
@@ -67,17 +66,17 @@ object Prakt2{
 
       println("Node 1")
       val n1 = Node(2, Empty, Empty)
-      println(n1.s())
+      println(n1.s)
       println(n1.isLeftTree())
 
       println("Node 2")
       val n2 = Node(2, Node(1, Empty, Empty), Node(1, Empty, Empty))
-      println(n2.s())
+      println(n2.s)
       println(n2.isLeftTree())
 
       println("Node 3")
       val n3 = Node(2, Empty, Node(1, Empty, Empty))
-      println(n3.s())
+      println(n3.s)
       println(n3.isLeftTree())
 
       println("Merge 1")
